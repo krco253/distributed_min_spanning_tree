@@ -95,11 +95,6 @@ int main(int argc, char* argv[]){
         for (auto bridgeit = bridgesList.begin(); bridgeit != bridgesList.end(); bridgeit++){
             if (bridgeit->id == *it){
                 message = bridgeit->best_config;
-
-            }
-        }
-        for (auto bridgeit = bridgesList.begin(); bridgeit != bridgesList.end(); bridgeit++){
-                // get<2>(message) = *it;
                 //for each port connected to the bridge
                 for (auto portsit = bridgeit->connected_ports.begin(); portsit != bridgeit->connected_ports.end(); portsit++){
                     // //process the message
@@ -118,6 +113,10 @@ int main(int argc, char* argv[]){
                     }
 
                 }
+            }
+        }
+        for (auto bridgeit = bridgesList.begin(); bridgeit != bridgesList.end(); bridgeit++){
+                // get<2>(message) = *it;
                 //update this node's config
                 for (auto portsit = bridgeit->connected_ports.begin(); portsit != bridgeit->connected_ports.end(); portsit++){
                         intTuple this_ports_config = portsit->best_config;
