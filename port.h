@@ -6,6 +6,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <algorithm>
 using namespace std;
 typedef tuple <int, int, int> intTuple;
 class Port {

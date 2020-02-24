@@ -25,11 +25,7 @@ bool Port :: isConnected(int bridge_id){
 
  void Port :: updateConfig(intTuple port_config){
     get<0>(this->best_config) = get<0>(port_config);
-    if(get<2>(this->best_config) != get<2>(port_config)){
-        get<1>(this->best_config) = get<1>(port_config) + 1;
-    } else {
-        get<1>(this->best_config) = get<1>(port_config);
-    }
+    get<1>(this->best_config) = get<1>(port_config);
     get<2>(this->best_config) = get<2>(port_config);
  }
 

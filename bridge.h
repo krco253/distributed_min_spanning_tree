@@ -16,6 +16,7 @@ class Bridge {
 		//node state information
 		pair <int, string> config_source; //which node/port gave the best config info
 		vector<Port> connected_ports;
+		vector<Port>::iterator findPort(string port_id);
 		// ID of identified root - distance to root - ID of sending bridge
 		intTuple  best_config;
 };

@@ -4,7 +4,7 @@ EXE = spanning_tree #executable name
 OBJS = $(SOURCES:.cpp = .o)
 
 $(EXE): $(OBJS) 
-	$(CC) -o $(EXE) $(OBJS)
+	$(CC) -std=c++11  -o $(EXE) $(OBJS)
 %.o: %.cpp
 	$(CC) $(FLAGS) -c $(.SOURCE)
 
