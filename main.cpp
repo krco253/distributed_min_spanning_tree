@@ -101,30 +101,32 @@ int main(int argc, char* argv[]){
 
     //PROCESS EACH MESSAGE
     for (auto it = msg_order.begin(); it != msg_order.end(); it++){ 
-        //-----------------------------------------get the current message of the node
+        //-----------------------------------------get the current message of the sending node
         intTuple message;
         vector<Port> sending_node_configs;
         for (auto bridgeit = bridgesList.begin(); bridgeit != bridgesList.end(); bridgeit++){
-            if (bridgeit->id == *it){
+            if (bridgeit->id == *it){ //this is the sending node if true
                 message = bridgeit->best_config;
-                if(get<2>(message) != *it){ 
+                if(bridgeit->id != get<0>(bridgeit->best_config)){
                     get<1>(message)++;
                 }
                 get<2>(message) = *it;
                 //for each port connected to this node
                 for (auto portsit = bridgeit->connected_ports.begin(); portsit != bridgeit->connected_ports.end(); portsit++){
-                    // process the message
-                        if (portsit->compareRoots(message) == 1){
-                            portsit->updateConfig(message);
-                        } else if (portsit->compareRoots(message) == 0){
-                            if (portsit->compareDistance(message) == 1){
-                                portsit->updateConfig(message);
-                            } else if (portsit->compareDistance(message) == 0){
-                                if(portsit->compareSendingNode(message) == 1){
-                                    portsit->updateConfig(message);
+                    //-----------------------------------------------------------send the message
+                        if (portsit->compareRoots(message) == 1){ //if the root is smaller
+                            portsit->updateConfig(message); //change best config
+                        } else if (portsit->compareRoots(message) == 0){ //if the root is the same
+                            if (portsit->compareDistance(message) == 1){ //and the distance is smaller
+                                portsit->updateConfig(message); //change config
+                            } else if (portsit->compareDistance(message) == 0){ //and the distance is the same
+                                if(portsit->compareSendingNode(message) == 1){ //but sending node is smaller
+                                    portsit->updateConfig(message); //change best config
                                 }
                             }
                     }
+                    //if none of the criteria was met, this is not a better message
+                    //so we ignore it
                 }
                 //keep track of port changes in order to sync all other copies of the port
                 for (auto portsit = bridgeit->connected_ports.begin(); portsit != bridgeit->connected_ports.end(); portsit++){
@@ -132,7 +134,7 @@ int main(int argc, char* argv[]){
                 }
             }
         }
-        //sync all the other copies of the port with this node's copy
+        //--------------------------------------sync all the other copies of the port with this node's copy
         for (auto conit = sending_node_configs.begin(); conit != sending_node_configs.end(); conit++){
             for (auto bridgeit = bridgesList.begin(); bridgeit != bridgesList.end(); bridgeit++){
                 if(conit->isConnected(bridgeit->id)){
@@ -143,13 +145,13 @@ int main(int argc, char* argv[]){
             }
         }
 
-        //update nodes' best configs according to their ports
+        //-----------------------------------------------update nodes' best configs according to their ports
         for (auto bridgeit = bridgesList.begin(); bridgeit != bridgesList.end(); bridgeit++){
                 for (auto portsit = bridgeit->connected_ports.begin(); portsit != bridgeit->connected_ports.end(); portsit++){
                         intTuple this_ports_config = portsit->best_config;
-                         if(get<2>(message) != bridgeit->id){ 
-                            get<1>(message)++;
-                        }
+                         //if(get<2>(message) != bridgeit->id){ 
+                            // get<1>(message)++;
+                        //}
                         if (portsit->compareRoots(bridgeit->best_config) == -1){
                             (bridgeit->config_source).second = portsit->id;
                             bridgeit->best_config = this_ports_config;
@@ -166,7 +168,7 @@ int main(int argc, char* argv[]){
                     }
                 }
         }
-        //update each port according to their updated node configs
+        //--------------------------------------------update each port according to their updated node configs
         for (auto bridgeit = bridgesList.begin(); bridgeit != bridgesList.end(); bridgeit++){
                 for (auto portsit = bridgeit->connected_ports.begin(); portsit != bridgeit->connected_ports.end(); portsit++){
                     message = bridgeit->best_config;
