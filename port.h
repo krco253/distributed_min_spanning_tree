@@ -22,6 +22,7 @@ class Port {
         string id;
         intTuple best_config;
         vector<int> connected_bridges;
+        string open_or_closed;
 
 };
 

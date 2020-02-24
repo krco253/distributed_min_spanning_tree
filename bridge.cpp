@@ -24,5 +24,10 @@ vector<Port>::iterator Bridge :: findPort(string port_id){
 	}
 }
 void Bridge :: printBridge(){
-	cout << "Bridge " << this->id << ": best configuration <" << get<0>(this->best_config) << ", " << get<1>(this->best_config) << ">, from " << get<2>(this->best_config) << endl;
+	cout << "Bridge " << this->id << ": best configuration <" << get<0>(this->best_config) 
+	<< ", " << get<1>(this->best_config) << ">, from " << get<2>(this->best_config);
+	if (this->config_source.second != ""){
+		cout << " via " << this->config_source.second;
+	}
+	cout << endl;
 }

@@ -20,7 +20,8 @@ bool Port :: isConnected(int bridge_id){
  }
 
  void Port :: printPort(){
-    cout << "port " << this->id << ": <" << get<0>(best_config) << ", " << get<1>(best_config) << ", " << get<2>(best_config) << ">" << endl;
+    cout << "port " << this->id << ": <" << get<0>(best_config) << ", " 
+    << get<1>(best_config) << ", " << get<2>(best_config) << "> " << this->open_or_closed << endl;
  }
 
  void Port :: updateConfig(intTuple port_config){
@@ -30,7 +31,6 @@ bool Port :: isConnected(int bridge_id){
  }
 
 int Port :: compareRoots(intTuple message){
-    // cout << get<0>(this->best_config) << " " << get<0>(message) << endl;
     if(get<0>(this->best_config) > get<0>(message)){
         return 1;
     }

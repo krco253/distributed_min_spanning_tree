@@ -14,8 +14,8 @@ int main(int argc, char* argv[]){
     string filename = argv[1];
     ifstream lanfile;
     lanfile.open(filename);	
-    vector<Bridge> bridgesList;
-    vector<Port> portsList;
+    vector<Bridge> bridgesList; //list of all the bridges
+    vector<Port> portsList; //keeps track of ports creation, to ensure consistency of copies
     string temp;
     if(lanfile.is_open()){
         while(!lanfile.eof()){		
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]){
 
                 //create the bridge
                 intTuple temp_tuple (temp_id, 0, temp_id);
-                pair <int, string> temp_config(temp_id, "A");		
+                pair <int, string> temp_config(temp_id, "");		
                         
                 Bridge temp_bridge(temp_id, temp_config, temp_tuple, connections);
                 bridgesList.push_back(temp_bridge);	
@@ -139,12 +139,15 @@ int main(int argc, char* argv[]){
                             get<1>(message)++;
                         }
                         if (portsit->compareRoots(bridgeit->best_config) == -1){
+                            (bridgeit->config_source).second = portsit->id;
                             bridgeit->best_config = this_ports_config;
                         } else if (portsit->compareRoots(bridgeit->best_config) == 0){
                             if (portsit->compareDistance(bridgeit->best_config) == -1){
+                                (bridgeit->config_source).second = portsit->id;
                                 bridgeit->best_config = this_ports_config;
                             } else if (portsit->compareDistance(bridgeit->best_config) == 0){
                                 if(portsit->compareSendingNode(bridgeit->best_config) == -1){
+                                    (bridgeit->config_source).second = portsit->id;
                                     bridgeit->best_config = this_ports_config;
                                 }
                             }
@@ -174,6 +177,21 @@ int main(int argc, char* argv[]){
         }       
 
     }
+    //determine which ports should be open 
+        for (auto bridgeit = bridgesList.begin(); bridgeit != bridgesList.end(); bridgeit++){
+            for (auto portsit = bridgeit->connected_ports.begin(); portsit != bridgeit->connected_ports.end(); portsit++){
+                if (get<2>(portsit->best_config) == bridgeit->id){
+                    portsit->open_or_closed = "open";
+                    
+                }
+                else if(bridgeit->config_source.second == portsit->id){
+                    portsit->open_or_closed = "open";
+                    
+                } else {
+                portsit->open_or_closed = "closed";
+                }
+            }
+        }
     //------------------------------------------------------------------END SPANNING TREE ALGORITHM
     //-----------------------------------------------------------------------print results
     for (auto it = bridgesList.begin(); it != bridgesList.end(); it++){
