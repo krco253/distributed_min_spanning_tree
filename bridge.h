@@ -1,3 +1,9 @@
+/*-----------------------------------------------
+Filename: bridge.h
+Author: Kelsey Cole
+Purpose: Define class Bridge
+------------------------------------------------*/
+
 #ifndef BRIDGE_H
 #define BRIDGE_H
 #include "port.h"
@@ -6,11 +12,9 @@ typedef tuple <int, int, int> intTuple;
 class Bridge {
 	public : 
 		Bridge(int bridge_id, pair <int, string> csource, intTuple bconfig, vector<Port> port_connections);
-		// Bridge operator=(const Bridge&);
 		int getId();
 		void printBridge();
 		void addPort(Port new_port);
-		// void printBestConfigs();
 		//node identity information
 		int id;
 		//node state information

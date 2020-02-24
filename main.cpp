@@ -1,9 +1,19 @@
+/*-----------------------------------------------
+            Program Name: Spanning Tree
+--------------------------------------------------
+Filename: main.cpp
+Author: Kelsey Cole
+Compilation: Use the provided makefile.
+Purpose: Use classes Bridge and Port to implement
+the distributed minimum spanning tree algorithm
+given a LAN file. 
+------------------------------------------------*/
 #include <fstream>
 #include <string>
 #include "bridge.h"
 
 int main(int argc, char* argv[]){
-    //-----------------------------------------------------store order of nodes sending messages
+    //-----------------------------------------------------parse command line arguments
     vector<int> msg_order;
     for (int i = 2; i < argc; i++){
         msg_order.push_back(stoi(argv[i]));
@@ -13,39 +23,40 @@ int main(int argc, char* argv[]){
     // and store bridge information in class Bridge
     string filename = argv[1];
     ifstream lanfile;
-    lanfile.open(filename);	
+    lanfile.open(filename);	 //open the filename provided by the command line
     vector<Bridge> bridgesList; //list of all the bridges
     vector<Port> portsList; //keeps track of ports creation, to ensure consistency of copies
-    string temp;
+    string temp; //used as temporary storage for data processing
     if(lanfile.is_open()){
         while(!lanfile.eof()){		
+            //retrieve one line of file for parsing
             getline(lanfile, temp);
+
             if (temp != ""){
-                // cout << temp << endl;
                 //parse string for ports
-                string token;	
+                string tok;	
                 size_t pos = 0;	
-                string delimiter = " ";
+                string delimiter = " "; //distinguish port ids by spaces
                 int counter = 0;
                 int temp_id = 0;
-                vector<Port> connections;
+                vector<Port> connections; 
+                //parse string by the delimiter
                 while ((pos = temp.find(delimiter)) != string::npos) {
-                    token = temp.substr(0, pos);
-                    if (counter == 0){
-                        temp_id = stoi(token);		
-                        //cout << "id: " << temp_id << endl;	
+                    tok = temp.substr(0, pos); //split string into tokens
+                    if (counter == 0){ //if the counter is 0, this is the first token
+                        temp_id = stoi(tok); //so this is the bridge ID, which is an int . . . so we convert it			
                     } else {
-                        bool alreadyCreated = false;
+                        bool alreadyCreated = false; //check if this port has already been created for another node
                         for (auto portsit = portsList.begin(); portsit != portsList.end(); portsit++){ 
-                            if (portsit->id == token){
-                                alreadyCreated = true;
+                            if (portsit->id == tok){
+                                alreadyCreated = true; //if so, add the same copy of that port to this node
                                 portsit->addBridge(temp_id);
                                 connections.push_back(*portsit);
                             }
                         }
                         if (!alreadyCreated){ //create new port
                             intTuple temp_config (temp_id, 0, temp_id);
-                            Port temp_port(token,temp_config);
+                            Port temp_port(tok,temp_config);
                             temp_port.addBridge(temp_id);
                             portsList.push_back(temp_port);
                             connections.push_back(temp_port);
@@ -55,7 +66,7 @@ int main(int argc, char* argv[]){
                     temp.erase(0, pos + delimiter.length()); //erase processed data
                     counter++;	
                 }
-                //process the last character
+                //process the last token
                 bool alreadyCreated = false;
                 for (auto portsit = portsList.begin(); portsit != portsList.end(); portsit++){ 
                     if (portsit->id == temp){
@@ -75,7 +86,8 @@ int main(int argc, char* argv[]){
                 //create the bridge
                 intTuple temp_tuple (temp_id, 0, temp_id);
                 pair <int, string> temp_config(temp_id, "");		
-                        
+                
+                //add the bridge to the Bridges list
                 Bridge temp_bridge(temp_id, temp_config, temp_tuple, connections);
                 bridgesList.push_back(temp_bridge);	
             }
